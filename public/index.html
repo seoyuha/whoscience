@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>누가 그런 거지? 과학 탐정단</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:16px}
+/* 처음 화면 */
+#home{background:var(--bg) url(assets/map_small.png) center/cover;}
+#home::before{content:"";position:absolute;inset:0;background:rgba(255,212,94,.86)}
+.homewrap{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:28px;max-width:1100px;width:100%;align-items:center}
+.title h1{margin:0;line-height:1.1}
+.biglogo{display:inline-block;font-family:"Galmuri14";font-weight:800;font-size:clamp(2.3rem,4.6vw,3.6rem);background:#343247;color:#ffe17a;padding:.22em .5em .28em;border:4px solid #23203a;border-radius:16px;box-shadow:var(--shadow);transform:rotate(-1.2deg);letter-spacing:.02em;text-shadow:3px 3px 0 #6b5420}
+.biglogo em{font-style:normal;color:#ff6b5e}
+.title h1 em{font-style:normal;color:var(--red)}
+.title p{margin:.4em 0 1.2em;color:var(--ink2);font-family:"Galmuri14";font-size:1.2rem}
+.peek{width:100%;border:4px solid var(--ink);border-radius:18px;box-shadow:var(--shadow);image-rendering:pixelated;display:block}
+.steps{display:flex;gap:12px;margin-top:16px}
+.steps div{flex:1;background:var(--paper);border:3px solid var(--ink);border-radius:10px;padding:8px;text-align:center;font-family:"Galmuri14";transform:rotate(-1.5deg)}
+.steps div:nth-child(2){transform:rotate(1deg)} .steps b{color:var(--red)}
+.card{padding:30px 26px 22px 64px}
+.card label{display:block;font-family:"Galmuri14";font-size:1.35rem;margin:.2em 0 .35em}
+.codebox{width:100%;font-size:3rem;text-align:center;letter-spacing:.4em;border:3px solid var(--ink);border-radius:14px;padding:.1em 0 .1em .4em;background:#fff;font-family:Galmuri14}
+.namerow{display:flex;gap:10px;margin-bottom:12px}
+.namebox{flex:1;font-size:1.6rem;text-align:center;border:3px solid var(--ink);border-radius:14px;background:#ffe17a;padding:.3em;box-shadow:inset 0 0 0 3px #fff3b8}
+.dice{width:64px;font-size:1.8rem;padding:0}
+.btnrow{display:flex;gap:10px}
+.btnrow .grow{flex:1;font-size:1.5rem;padding:.55em}
+.hint{color:var(--blue);font-size:.95rem;margin:.3em 0 .6em;min-height:1.2em}
+.err{color:var(--red);font-family:"Galmuri14";min-height:1.3em;margin-top:6px}
+.teacher{margin-top:22px;padding:22px 20px 18px;display:flex;gap:14px;align-items:center}
+.teacher button{flex:1;font-size:1.4rem;padding:.6em}
+.small{font-size:.8rem;color:var(--ink2);margin-top:12px;line-height:1.4}
+@media (max-width:860px){.homewrap{grid-template-columns:1fr}.leftcol{display:none}.card{padding-left:56px}}
+/* 기다리는 화면 */
+#wait .paper{padding:28px 30px;text-align:center;max-width:620px;width:100%}
+#wait h2{font-family:"Galmuri14";font-size:2rem;margin:.2em 0}
+.mini-grid{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:16px;max-height:40vh;overflow:auto}
+.mini-grid span{display:inline-flex;align-items:center;gap:4px;background:#fff;border:2px solid var(--ink);border-radius:10px;padding:2px 8px 2px 2px;font-size:.9rem}
+.mini-grid span.me{background:#ffe17a}
+/* 역할 카드 */
+#roleScr{flex-direction:column;gap:10px}
+#roleScr h2{font-family:"Galmuri14";font-size:2rem;margin:0;text-align:center}
+.rolecard{width:min(400px,90vw);min-height:440px;padding:40px 20px 20px 56px;text-align:center;touch-action:none}
+.rolecard .cover{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:"Galmuri14";font-size:1.6rem;border-radius:13px;background:repeating-linear-gradient(45deg,#ffe9a8 0 18px,#ffdf8a 18px 36px)}
+.rolecard .cover small{font-size:1rem;color:var(--ink2);margin-top:6px}
+.rolecard h3{font-family:"Galmuri14";font-size:2.6rem;margin:.2em 0}
+.rolecard p{margin:.2em 0;line-height:1.6}
+.rolecard .mates{margin-top:12px}
+.rolecard .mates b{color:var(--red)}
+.cnt{font-family:Galmuri14;color:var(--red);font-size:2.2rem;vertical-align:-4px}
+/* 게임 */
+#game{padding:0;display:block}
+#cv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;image-rendering:pixelated}
+.tasks{position:absolute;left:12px;top:12px;width:min(320px,42vw);padding:12px 14px 10px 40px;font-size:.95rem}
+.tasks::before{left:28px!important}
+.tasks .hd{display:flex;justify-content:space-between;font-family:"Galmuri14";font-size:1.1rem;margin-bottom:6px}
+.tasks .hd span:first-child{background:var(--tape);padding:0 8px}
+.tasks ul{list-style:none;margin:0;padding:0}
+.tasks li{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:2px solid var(--line);font-family:"Galmuri14";font-size:1rem}
+.tasks li i{width:20px;height:20px;border:2.5px solid var(--ink);border-radius:4px;flex:none;background:#fff;position:relative}
+.tasks li.done{color:#a39385;text-decoration:line-through}
+.tasks li.done i::after{content:"✓";position:absolute;left:1px;top:-6px;color:var(--red);font-size:20px;font-weight:bold}
+.tasks li .pl{font-weight:bold}
+.tasks li.en{font-family:"Galmuri11",sans-serif;font-weight:bold;font-size:.92rem;line-height:1.25;cursor:pointer}
+.tasks .bar{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:.8rem}
+.tasks .bar div{flex:1;height:14px;border:2.5px solid var(--ink);border-radius:8px;overflow:hidden;background:#fff}
+.tasks .bar div b{display:block;height:100%;background:var(--blue);width:0;transition:width .6s}
+.tasks .mess{margin-top:5px;font-size:.85rem;color:var(--red);font-family:"Galmuri14"}
+.tasks.fold ul{display:none}
+.tr{position:absolute;right:12px;top:12px;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.chip{display:flex;align-items:center;gap:8px;background:#fff;border:3px solid var(--ink);border-radius:30px;padding:3px 14px 3px 4px;font-family:"Galmuri14";font-size:1.1rem;touch-action:none}
+.timer{background:#fff;border:3px solid var(--ink);border-radius:12px;padding:2px 12px;text-align:right;font-family:"Galmuri14";font-size:.75rem;line-height:1}
+.timer b{font-family:Galmuri14;font-size:1.8rem;display:block}
+.where{background:var(--sky);padding:4px 14px;font-family:"Galmuri14";transform:rotate(2deg)}
+.mapbtn{font-size:1.05rem;padding:.35em .8em}
+.acts{position:absolute;right:16px;bottom:16px;display:grid;grid-template-columns:auto auto;grid-template-rows:auto auto;gap:10px;align-items:end;justify-items:center}
+.round{width:84px;height:84px;border-radius:50%;padding:0;font-size:1rem;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#e8e2dc}
+.round .ic{font-size:1.7rem;line-height:1}
+.round .ic2{width:40px;height:40px;image-rendering:pixelated}
+.round .ic .pi{width:40px;height:40px}
+.doic{width:44px;height:44px;image-rendering:pixelated;display:block;margin:-6px auto 0}
+.round.on{background:#ff6b5e;color:#fff;border-color:#a82d24;animation:pulse 1s infinite}
+@keyframes pulse{50%{transform:scale(1.07)}}
+#doBtn{grid-column:1/3;width:150px;height:150px;border-radius:50%;padding:0;font-size:2.2rem;background:#fff4c8;position:relative;touch-action:none}
+#doBtn.on{background:#ffe066}
+#doBtn small{display:block;font-size:.8rem;color:var(--ink2)}
+#doBtn svg{position:absolute;inset:-8px;width:calc(100% + 16px);height:calc(100% + 16px);transform:rotate(-90deg);pointer-events:none}
+#doBtn .arrow{position:absolute;left:-14px;top:50%;font-size:1.6rem;transform:translateY(-50%);color:var(--red)}
+#doBtn.cool{background:#ddd}
+#doBtn.cool svg circle.bg{stroke:#999;stroke-dasharray:20 12;animation:spin 2s linear infinite;transform-origin:50% 50%}
+@keyframes spin{to{transform:rotate(360deg)}}
+.overlay{position:fixed;inset:0;background:rgba(40,30,25,.55);display:flex;align-items:center;justify-content:center;z-index:20;padding:16px}
+#mapOv .paper{padding:14px;max-width:96vw}
+#mapOv canvas{max-width:92vw;max-height:72vh;image-rendering:pixelated;border:3px solid var(--ink);border-radius:8px;display:block}
+.quiz{width:min(620px,94vw);padding:30px 24px 22px;max-height:94vh;overflow:auto}
+.quiz h3{font-family:"Galmuri14";font-size:1.35rem;line-height:1.5;margin:.2em 0 .8em;text-align:center;word-break:keep-all;overflow-wrap:break-word}
+.quiz .opts{display:grid;gap:10px}
+.quiz .opts button{font-size:1.2rem;line-height:1.35;padding:.55em .7em;text-align:left;display:flex;gap:.5em;align-items:center;word-break:keep-all;overflow-wrap:break-word}
+.quiz .opts button .qn{flex:none;color:var(--blue)}
+.quiz .opts button.ok{background:#c9f0c4;border-color:#3d8a3a;opacity:1}
+.quiz .opts button.no{background:#ffd3cc;opacity:1}
+.quiz .exp{margin-top:12px;padding:.6em .8em;background:#fff6c8;border:3px solid #3a2e28;border-radius:12px;font-size:1.1rem;line-height:1.5;word-break:keep-all}
+.quiz.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+.joy{position:absolute;width:120px;height:120px;border-radius:50%;border:4px solid rgba(255,255,255,.7);background:rgba(255,255,255,.15);pointer-events:none;transform:translate(-50%,-50%)}
+.joy b{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px;border-radius:50%;background:rgba(255,255,255,.85);border:3px solid var(--ink)}
+/* 회의·투표 */
+.meetbox{max-width:760px;width:100%;padding:34px 28px 26px;text-align:center}
+.meetbox h2{font-family:"Galmuri14";font-size:2.2rem;margin:.1em 0}
+.bigtime{font-family:Galmuri14;font-size:5rem;color:var(--blue);line-height:1}
+.votegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;max-height:62vh;overflow:auto;padding:4px}
+.votegrid button{display:flex;flex-direction:column;align-items:center;padding:8px 4px;font-size:1rem;border-radius:12px}
+.votebar{display:flex;align-items:center;gap:12px;margin-top:12px}
+.votebar .grow{flex:1;text-align:left;font-family:"Galmuri14"}
+#voteScr{flex-direction:column;align-items:stretch;justify-content:flex-start;padding:16px}
+.vhead{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;margin-bottom:12px}
+.vhead h2{font-family:"Galmuri14";margin:0;font-size:1.6rem}
+.stamp{display:inline-block;border:4px solid var(--red);color:var(--red);font-family:"Galmuri14";font-size:2.4rem;padding:.1em .6em;transform:rotate(-6deg);border-radius:8px;background:#fff8f4;margin:12px}
+.stamp.no{border-color:var(--blue);color:var(--blue)}
+.endbox{max-width:760px;width:100%;padding:34px 26px;text-align:center}
+.endbox h2{font-family:"Galmuri14";font-size:3rem;margin:.1em 0}
+.pausebox{font-family:"Galmuri14";font-size:2.4rem;padding:30px 50px}
+#introOv{position:fixed;inset:0;background:#241f33;z-index:300;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity .6s}
+#introOv.off{opacity:0;pointer-events:none}
+#introOv video{max-width:100%;max-height:100%;width:auto;height:auto}
+.introBtns{position:absolute;right:20px;bottom:20px;display:flex;gap:10px}
+.introBtns button{font-size:1.2rem}
+.cluebox{position:absolute;left:12px;top:calc(12px + var(--tbh,250px));width:min(320px,42vw);padding:18px 12px 8px;font-size:.85rem;max-height:30vh;overflow:auto}
+.clue{background:#fff6d6;border:2px dashed #e0a92b;border-radius:8px;padding:5px 8px;margin:4px 0;line-height:1.35}
+.clue small{color:var(--ink2)}
+.cluetoast{position:fixed;left:50%;top:14%;transform:translate(-50%,-30px);opacity:0;pointer-events:none;transition:.35s;padding:14px 22px;text-align:center;font-size:1.25rem;z-index:40;max-width:90vw;border-color:#e0a92b}
+.cluetoast.on{opacity:1;transform:translate(-50%,0)}
+.evbar{bottom:64px!important;background:#5e2d00!important;border-color:#ffb35e!important;color:#ffd9a0!important}
+.blackbar{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);background:#222;color:#ffe066;font-family:"Galmuri14";font-size:1.15rem;padding:.4em 1em;border-radius:12px;border:3px solid #ffe066}
+.round.sp{background:#cfe6ff} .round.bo{background:#3a3a50;color:#ffe066}
+.meetextra{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:12px;text-align:left}
+.mx{background:#fff;border:2px solid var(--ink);border-radius:10px;padding:8px 12px;min-width:220px;max-width:340px;font-size:.9rem}
+.mx h4{margin:0 0 4px;font-family:"Galmuri14";font-size:1.05rem}
+.mx ul{margin:0;padding-left:16px;max-height:26vh;overflow:auto} .mx li{margin:2px 0} .mx small{color:var(--blue)}
+#meetScr .meetbox{max-height:96vh;overflow:auto}
+</style>
+</head>
+<body>
+<!-- 인트로 영상 -->
+<div id="introOv">
+  <video id="introV" src="assets/intro.mp4" muted autoplay playsinline preload="auto"></video>
+  <div class="introBtns"><button id="introSnd">🔊 소리 켜기</button><button class="y" id="introSkip">건너뛰기 ▸</button></div>
+</div>
+
+<!-- 처음 화면 -->
+<section id="home" class="screen">
+  <div class="homewrap">
+    <div class="leftcol">
+      <div class="title"><h1 class="biglogo">누가 그런 거지<em>?</em></h1><p>과학 탐정단 · 2단원 지구와 바다 · 3단원 소리의 성질</p></div>
+      <canvas id="peek" class="peek" width="640" height="300"></canvas>
+      <div class="steps"><div><b>1</b> TV에 방</div><div><b>2</b> 심부름</div><div><b>3</b> 투표</div></div>
+    </div>
+    <div>
+      <div class="paper lined margin card">
+        <span class="tape">학생</span>
+        <label>방 번호</label>
+        <input id="code" class="codebox" inputmode="numeric" maxlength="4" placeholder="0000" autocomplete="off">
+        <div class="hint" id="codeHint"></div>
+        <label>별명</label>
+        <div class="namerow"><div class="namebox jua" id="nameShow">별명</div><button class="dice" id="dice" title="별명 굴리기">🎲</button></div>
+        <div class="btnrow"><button id="typeName">직접 쓰기</button><button class="y grow" id="joinBtn">들어가기</button></div>
+        <div class="err" id="joinErr"></div>
+      </div>
+      <div class="paper teacher">
+        <span class="tape sky">선생님</span>
+        <button class="y" onclick="location.href='tv.html'">방 만들기 (TV)</button>
+        <button onclick="startPractice()">혼자 연습하기</button>
+      </div>
+      <div class="small">그림: 선생님이 만든 학교 그림 · LimeZu Modern Interiors(무료판, 비영리) · NettySvit CoolSchool(CC0)<br>가입·로그인이 없어요. 진짜 이름은 쓰지 않아요. 판 기록은 저장하지 않아요.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 기다리기 -->
+<section id="wait" class="screen hide">
+  <div class="paper lined">
+    <span class="tape yel">대기실</span>
+    <div id="waitMe"></div>
+    <h2>선생님이 시작할 때까지 기다려요</h2>
+    <div>방 <b class="pix" id="waitCode"></b> · <span id="waitN"></span>명 들어왔어요</div>
+    <div class="mini-grid" id="waitGrid"></div>
+  </div>
+</section>
+
+<!-- 역할 카드 -->
+<section id="roleScr" class="screen hide">
+  <h2>태블릿을 손으로 가리고<br>카드를 꾹 눌러 보세요</h2>
+  <div><span class="cnt" id="roleCnt">10</span> 초 뒤에 놀이가 시작돼요</div>
+  <div class="paper lined margin rolecard" id="roleCard">
+    <span class="tape pink">내 역할</span>
+    <div id="roleBody"></div>
+    <div class="cover" id="roleCover">꾹 누르고 있는 동안만 보여요<small>손을 떼면 다시 가려져요</small></div>
+  </div>
+</section>
+
+<!-- 놀이 -->
+<section id="game" class="screen hide">
+  <canvas id="cv"></canvas>
+  <div class="tasks paper lined margin" id="taskBox">
+    <div class="hd"><span id="taskHd">오늘의 심부름</span><span id="taskN">0/4</span></div>
+    <ul id="taskList"></ul>
+    <div class="bar">모두의 심부름 <div><b id="progBar"></b></div><span id="progTxt">0%</span></div>
+    <div class="mess" id="messTxt"></div>
+  </div>
+  <div class="paper cluebox hide" id="clueBox"></div>
+  <div class="cluetoast paper" id="clueToast"></div>
+  <div class="blackbar hide" id="blackBar"></div>
+  <div class="blackbar evbar hide" id="evBar"></div>
+  <div class="tr">
+    <div class="chip" id="meChip"></div>
+    <div class="timer">남은 시간<b id="timeTxt">8:00</b></div>
+    <div class="where" id="whereTxt">복도</div>
+    <button class="mapbtn" id="mapBtn"><img class="pi" src="assets/ui/icon_map.png" alt=""> 지도</button>
+  </div>
+  <div class="acts">
+    <button class="round sp hide" id="spBtn"></button>
+    <button class="round bo hide" id="boBtn"><img class="ic2" src="assets/ui/icon_blackout.png" alt="">정전</button>
+    <button class="round" id="repBtn"><img class="ic2" src="assets/ui/icon_report.png" alt="">발견!</button>
+    <button class="round" id="bellBtn"><img class="ic2" src="assets/ui/icon_bell.png" alt="">비상벨</button>
+    <button id="doBtn"><span class="arrow hide" id="doArrow">➤</span><img class="doic" src="assets/ui/icon_do.png" alt=""><span id="doLbl">하기</span><small id="doSub">꾹 누르기</small>
+      <svg viewBox="0 0 100 100"><circle class="bg" cx="50" cy="50" r="46" fill="none" stroke="#ccc" stroke-width="6"/><circle id="doRing" cx="50" cy="50" r="46" fill="none" stroke="#2f6bd8" stroke-width="7" stroke-dasharray="289" stroke-dashoffset="289" stroke-linecap="round"/></svg></button>
+  </div>
+  <div class="joy hide" id="joy"><b id="joyKnob"></b></div>
+</section>
+
+<!-- 회의 -->
+<section id="meetScr" class="screen hide">
+  <div class="paper lined meetbox">
+    <span class="tape pink">회의 시간</span>
+    <div id="meetCaller"></div>
+    <h2 id="meetTitle"></h2>
+    <div>교실에서 말로 이야기해요</div>
+    <div class="bigtime" id="meetTime">60</div>
+    <div id="meetTip" style="margin-top:8px;color:var(--ink2)">장소와 시간으로 말해요 · 친구 탓 말고 증거로</div>
+    <div id="meetExtra" class="meetextra"></div>
+  </div>
+</section>
+
+<section id="voteScr" class="screen hide">
+  <div class="paper vhead"><span class="tape pink">투표 · 한 번만 낼 수 있어요</span><h2 id="voteTitle">장난꾸러기 같은 친구를 골라요</h2><span class="bigtime" style="font-size:2.6rem" id="voteTime">20</span></div>
+  <div class="votegrid" id="voteGrid"></div>
+  <div class="paper votebar" style="padding:10px 14px"><button id="skipBtn">건너뛰기</button><div class="grow" id="votePick">고른 친구: 없음</div><button class="y" id="voteBtn" disabled>이 친구로 낼게요</button></div>
+</section>
+
+<section id="resScr" class="screen hide">
+  <div class="paper meetbox" id="resBox"></div>
+</section>
+
+<section id="endScr" class="screen hide">
+  <div class="paper lined endbox" id="endBox"></div>
+</section>
+
+<div class="overlay hide" id="mapOv"><div class="paper"><span class="tape sky">학교 지도</span><canvas id="mapCv"></canvas><div style="text-align:center;margin-top:10px"><button onclick="hide('mapOv')">닫기</button></div></div></div>
+<div class="overlay hide" id="quizOv"><div class="paper lined quiz" id="quizBox"><span class="tape yel">과학 심부름</span><h3 id="quizQ"></h3><div class="opts" id="quizOpts"></div><div class="exp hide" id="quizExp"></div></div></div>
+<div class="overlay hide" id="invOv"><div class="paper" style="padding:24px;max-width:900px;width:94vw"><span class="tape sky"><img class="pi" src="assets/ui/icon_detective.png" alt=""> 누구를 조사할까요?</span><div class="votegrid" id="invGrid" style="margin-top:10px"></div><div style="text-align:center;margin-top:10px"><button onclick="hide('invOv')">닫기</button></div></div></div>
+<div class="overlay hide" id="pauseOv"><div class="paper pausebox">⏸ 잠깐 멈췄어요</div></div>
+<div class="overlay hide" id="roleOv"><div class="paper lined margin rolecard" style="min-height:380px"><span class="tape pink">내 역할</span><div id="roleBody2"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="questions.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

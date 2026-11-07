@@ -1,0 +1,13 @@
+그림 출처
+- Modern Interiors Free v2.2 — LimeZu (limezu.itch.io)
+  무료판 라이선스: 비영리 프로젝트에서 사용·수정 가능 / 상업적 사용·재판매 불가
+- CoolSchool tileset 48px — NettySvit
+  CC0 (자유 사용)
+- 캐릭터 10명, 가구 9종(세면대·비상벨·트로피장·분리수거통·피아노·보건실 침대·구급상자·마이크·물감),
+  효과 3종(물웅덩이·분필 가루·잠금 테이프), 학교 소품 4종(실내화장·게시판·교실 문 열림/닫힘)
+  — 선생님이 직접 준비한 school_pixel_assets · whomess_graphics
+  (어질러짐 효과 10종, 새 방 소품 11종, UI 아이콘·로고·승리 그림 13종, 추가 캐릭터 4명, 청소 당번 빗자루, 차단기 상태 2종, 어질러짐 새 그림 5종, 분실물 3종(동전·지우개·실내화) 포함)
+- 장난감 상자 장식 등 아주 일부만 코드로 그렸습니다. (tools/*.py)
+
+글꼴
+- Galmuri (갈무리) — quiple, SIL Open Font License 1.1 (public/assets/fonts/, 라이선스 전문 동봉)

@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>누가 그런 거지? 과학 탐정단 · TV</title>
+<link rel="stylesheet" href="style.css">
+<style>
+body{font-size:clamp(14px,1.25vw,22px)}
+.wrap{position:fixed;inset:0;padding:1.2vw 1.4vw;display:flex;flex-direction:column;gap:1vw}
+.row{display:flex;gap:1vw}
+.box{padding:1.6vw 1.4vw 1vw}
+/* 대기실 */
+.code{font-family:Galmuri14;font-size:9vw;line-height:.9;letter-spacing:.02em;margin-top:.6vw}
+.promise{flex:1.15;font-family:"Galmuri14";font-size:2vw;line-height:1.5;padding-top:2.4vw}
+.promise b{color:var(--red);margin-right:.4em}
+/* 설정 글자는 화면 높이도 함께 봐서(--su), 브라우저 창이 낮아도 칸을 넘지 않아요 */
+:root{--su:min(1vw,1.62vh)}
+.setting{flex:1.3;font-family:"Galmuri14";font-size:calc(var(--su)*1.3);padding-top:calc(var(--su)*1.9)}
+.setting .r{display:flex;align-items:center;justify-content:space-between;margin:calc(var(--su)*.1) 0;gap:calc(var(--su)*.5);white-space:nowrap}
+.setting .r>span{flex:none}
+.setting button{font-size:calc(var(--su)*1.15);padding:.08em .5em;border-radius:10px;min-width:2.4em}
+.setting .num{font-family:Galmuri14;font-size:calc(var(--su)*1.5);min-width:3.4em;text-align:center}
+.grid{flex:1;display:grid;grid-template-columns:repeat(8,1fr);grid-auto-rows:minmax(0,1fr);gap:.6vw;min-height:0}
+.slot{border:3px dashed var(--ink);border-radius:14px;background:#ffe9a6;display:flex;align-items:center;justify-content:center;font-family:"Galmuri14";font-size:1.6vw;color:#b79a55}
+.slot.p{border-style:solid;background:var(--paper);color:var(--ink);flex-direction:column;cursor:pointer;font-size:1.25vw}
+.slot.p.off{opacity:.45}
+.bottom{display:flex;align-items:center;gap:1.4vw;padding:.8vw 1.2vw}
+.bottom img{height:9vw;width:9vw;border:3px solid var(--ink);border-radius:10px;background:#fffaf0}
+.bottom .info{flex:1;min-width:0;font-family:"Galmuri14";font-size:1.12vw;line-height:1.6;word-break:keep-all}
+.bottom .info b{color:var(--blue);font-family:Galmuri14;font-size:2.2vw}
+.bottom .url{color:var(--blue);font-family:Galmuri14;font-size:1.5vw}
+.bigbtn{font-size:2.2vw;padding:.4em 1.2em}
+.credit{position:fixed;left:1.4vw;bottom:.2vw;font-size:.7vw;color:var(--ink2)}
+/* 놀이 */
+.top{display:flex;align-items:center;gap:.8vw}
+.top h1{font-family:"Galmuri14";font-size:2.4vw;margin:0;flex:1}
+.top h1 small{color:var(--ink2);font-family:Galmuri14;font-size:1.6vw}
+.top button{font-size:1.4vw;padding:.3em .9em}
+.mapbox{flex:2.1;padding:1vw;display:flex;align-items:center;justify-content:center}
+.mapbox canvas{width:100%;height:auto;max-height:100%;image-rendering:auto;border-radius:6px}
+.timebox{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.bigtime{font-family:Galmuri14;color:var(--blue);font-size:9vw;line-height:1}
+.prog{display:flex;align-items:center;gap:1.2vw;padding:1vw 1.4vw}
+.prog .lbl{font-family:"Galmuri14";font-size:2vw}
+.prog .bar{flex:1;height:3.2vw;border:3px solid var(--ink);border-radius:2vw;overflow:hidden;background:#fff;position:relative}
+.prog .bar b{position:absolute;left:0;top:0;bottom:0;background:var(--blue);transition:width 1s}
+.prog .bar i{position:absolute;top:0;bottom:0;width:2px;background:rgba(255,255,255,.5)}
+.prog .pct{font-family:Galmuri14;font-size:3vw;min-width:4.4em;text-align:right}
+.messes{display:grid;grid-template-columns:repeat(5,1fr);gap:1vw;min-height:11vw}
+.ms{padding:2.2vw 1.2vw 1vw;font-family:"Galmuri14"}
+.ms .tape{top:-12px;left:12px;font-family:Galmuri14;font-size:2vw;padding:0 .5em}
+.ms.empty{background:#ffe9a6;border-style:dashed;color:#b79a55;display:flex;align-items:center;font-size:2vw;padding-top:1vw}
+.ms h3{margin:0;font-size:2.6vw}
+.ms p{margin:.2em 0 0;font-size:1.6vw}
+.ms p b{color:var(--red);font-family:Galmuri14;font-size:2.2vw}
+.warn{background:#e04a3f;color:#fff;font-family:"Galmuri14";font-size:2vw;text-align:center;border-radius:12px;padding:.3em;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.6}}
+/* 회의 */
+.cols{flex:1;display:flex;gap:1.2vw;min-height:0}
+.col{flex:1;padding:2.4vw 1.4vw 1.4vw;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.col h2{font-family:"Galmuri14";font-size:3.4vw;margin:.2em 0}
+.col .tag{border:3px solid var(--red);color:var(--red);font-family:"Galmuri14";font-size:2vw;padding:.1em .6em;border-radius:8px;background:#fff6f4}
+.mlist{width:100%;font-family:"Galmuri14";font-size:2.2vw;text-align:left}
+.mlist div{display:flex;justify-content:space-between;border-bottom:3px solid var(--line);padding:.35em 0}
+.mlist div b{color:var(--red);font-family:Galmuri14}
+.mlist div.e{color:#b9ad9f}
+.rule{align-self:center;background:var(--green);border:3px solid var(--ink);border-radius:12px;font-family:"Galmuri14";font-size:2vw;padding:.3em 1.2em}
+.center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.center h2{font-family:"Galmuri14";font-size:5vw;margin:.2em 0}
+.stamp{display:inline-block;border:5px solid var(--red);color:var(--red);font-family:"Galmuri14";font-size:4vw;padding:.05em .6em;transform:rotate(-6deg);border-radius:10px;background:#fff8f4;margin:1vw}
+.stamp.no{border-color:var(--blue);color:var(--blue)}
+.endrow{flex:1;display:flex;gap:1.4vw;min-height:0}
+.endrow .paper{flex:1;padding:2vw 2vw 1vw;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:0}
+.endrow h2{font-family:"Galmuri14";font-size:5vw;margin:.1em 0}
+.rejoin{position:fixed;right:1.4vw;bottom:12vw;z-index:30;display:flex;flex-direction:column;gap:.6vw}
+.rejoin .paper{padding:.8vw 1.2vw;font-family:"Galmuri14";font-size:1.6vw;display:flex;gap:.8vw;align-items:center}
+.modal{position:fixed;inset:0;background:rgba(40,30,25,.6);display:flex;align-items:center;justify-content:center;z-index:50}
+.modal .paper{padding:2vw;width:min(900px,90vw)}
+.modal textarea{width:100%;height:40vh;font-size:1.2rem;font-family:"Galmuri11";border:3px solid var(--ink);border-radius:10px;padding:10px}
+.engsel button{font-size:1.05vw;min-width:0;padding:.12em .38em}
+.frames{font-family:"Galmuri14";font-size:1.8vw;color:var(--blue);margin-top:1vw;line-height:1.5}
+.frames u{white-space:nowrap}
+.frames{word-break:keep-all}
+.klass{display:flex;flex-direction:column;align-items:center;gap:.2vw;flex:none}
+.klass>div:last-child{display:grid;grid-template-columns:repeat(4,auto);gap:.3vw}  /* 3학년 1~7반: 두 줄(4+3)로 모아 아래 안내 글이 넓게 */
+.klass button{font-size:1.1vw;padding:.1em .45em;min-width:0;white-space:nowrap}
+.bottom>button{white-space:nowrap;flex:none}
+.bottom>button:not(.bigbtn){font-size:1.15vw;padding:.35em .7em}
+.board table{width:100%;border-collapse:collapse;font-family:"Galmuri14";font-size:1.4vw;margin-top:.4vw}
+.board td{border-bottom:2px solid var(--line);padding:.25em .4em;text-align:left}
+.board tr.me{background:#fff3b8}
+.bigboard{width:100%;border-collapse:collapse;font-family:"Galmuri14";font-size:1.25rem;background:#fff}
+.bigboard th,.bigboard td{border:2px solid var(--ink);padding:.35em .6em;text-align:center}
+.bigboard th{background:#ffe9a6}
+.mvpbox{flex:1;padding:2vw 1.4vw .8vw;text-align:center;min-width:0}
+.mvp{width:100%;border-collapse:collapse;font-family:"Galmuri14";font-size:1.4vw;table-layout:fixed}
+.mvp th{color:var(--ink2);font-weight:normal;border-bottom:3px solid var(--ink);padding:.1em .2em;font-size:1.1vw;white-space:nowrap;overflow:hidden}
+.mvp td{border-bottom:2px solid var(--line);padding:.14em .3em;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mvp td.nm{text-align:left}
+.mvp td.sc{font-family:Galmuri14;color:var(--blue)}
+.mvp tr.hl{background:#fff3b8}
+.mvp .av{vertical-align:-10px}
+.imptag{background:#ffd0c8;border:2px solid var(--red);color:var(--red);border-radius:8px;font-size:1vw;padding:0 .3em;vertical-align:2px}
+.mvpnote{font-family:"Galmuri14";font-size:1.05vw;color:var(--ink2);margin-top:.4vw}
+.evrow{display:flex;align-items:center;gap:.8vw;padding:.5vw 1.2vw}
+.evrow .evlbl{font-family:"Galmuri14";font-size:1.3vw;color:var(--ink2)}
+.evrow button{font-size:1.35vw;padding:.2em .7em}
+.evrow .evstat{font-family:"Galmuri14";font-size:1.4vw;color:#b05a00;margin-left:auto}
+.banner{position:fixed;left:50%;top:9vh;transform:translate(-50%,-20px);opacity:0;transition:.4s;z-index:60;padding:1.4vw 3vw;text-align:center;font-family:"Galmuri14";font-size:2.6vw;pointer-events:none;border-color:#e0a92b;box-shadow:0 8px 0 rgba(58,46,40,.25)}
+.banner.on{opacity:1;transform:translate(-50%,0)}
+#dangerFx{position:fixed;inset:0;pointer-events:none;z-index:55;box-shadow:inset 0 0 0 0 rgba(224,74,63,0)}
+body.danger #dangerFx{animation:dang 1s infinite}
+@keyframes dang{50%{box-shadow:inset 0 0 0 1.4vw rgba(224,74,63,.75)}}
+body.dark .mapbox{filter:brightness(.35)}
+.timebox.hurry .bigtime{color:var(--red);animation:pulse2 1s infinite}
+@keyframes pulse2{50%{transform:scale(1.08)}}
+.clues{display:flex;gap:1vw}
+.clues .c{flex:1;background:#fff6d6;border:3px dashed #e0a92b;border-radius:12px;padding:.5vw 1vw;font-family:"Galmuri14";font-size:1.5vw;line-height:1.3}
+.clues .c small{display:block;color:var(--ink2);font-size:1.15vw}
+.runners{position:relative;height:9vw;overflow:hidden}
+.runner{position:absolute;bottom:0;image-rendering:pixelated;background-image:url(assets/chars.png);background-repeat:no-repeat;animation:run 7s linear infinite, walk .6s steps(6) infinite}
+@keyframes run{from{left:-6vw}to{left:102vw}}
+@keyframes walk{from{background-position-x:0}to{background-position-x:calc(-1 * var(--w))}}
+.rp{position:fixed;inset:0;background:rgba(40,30,25,.8);z-index:70;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1vw}
+.rp canvas{width:94vw;border:4px solid var(--ink);border-radius:12px;background:#2f2e3e}
+.rp .bar{display:flex;gap:1vw;align-items:center;font-family:"Galmuri14";font-size:1.8vw;color:#fff}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><div class="center"><h2 class="jua">방을 만드는 중...</h2></div></div>
+<div class="rejoin" id="rejoin"></div>
+<div class="credit">그림: 선생님이 만든 학교 그림 · LimeZu Modern Interiors(무료판) · NettySvit CoolSchool(CC0)</div>
+<div class="toast" id="toast"></div>
+<div class="banner paper" id="banner"></div>
+<div id="dangerFx"></div>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const fmt = s => { s = Math.max(0, Math.ceil(s)); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); };
+const LS = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }, del(k) { try { localStorage.removeItem(k); } catch (e) {} } };
+function avatar(look, scale = 3, full = false) {
+  const h = full ? 24 : 15, y0 = full ? 8 : 9;
+  return `<span class="av" style="width:${16 * scale}px;height:${h * scale}px;background-size:${448 * scale}px ${1024 * scale}px;background-position:-${27 * 16 * scale}px -${(look * 32 + y0) * scale}px"></span>`;
+}
+function josa(w, a, b) { const c = w.charCodeAt(w.length - 1); if (c < 0xac00 || c > 0xd7a3) return b; return (c - 0xac00) % 28 ? a : b; }
+let toastT; function toast(m) { const t = $("toast"); t.textContent = m; t.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("on"), 2000); }
+
+let MAP, imgSmall;
+fetch("assets/map.json").then(r => r.json()).then(m => MAP = m);
+const imgS = new Image(); imgS.src = "assets/map_small.png"; imgS.onload = () => imgSmall = imgS;
+
+// ---------- 소리 (TV에서만) ----------
+let AC = null;
+function beep(notes, type = "square", vol = 0.07) {
+  try {
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+    let t = AC.currentTime;
+    for (const [f, d] of notes) {
+      const o = AC.createOscillator(), g = AC.createGain(); o.type = type; o.frequency.value = f;
+      g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+      o.connect(g).connect(AC.destination); o.start(t); o.stop(t + d); t += d * 0.9;
+    }
+  } catch (e) {}
+}
+const SND = {
+  reveal: () => beep([[660, .12], [520, .2]], "triangle", .12),
+  meeting: () => beep([[880, .15], [660, .15], [880, .15], [660, .25]], "square", .08),
+  result: () => beep([[523, .12], [659, .12], [784, .25]], "triangle", .12),
+  win: () => beep([[523, .14], [659, .14], [784, .14], [1046, .4]], "triangle", .14),
+  tick: () => beep([[1200, .04]], "square", .03),
+  clue: () => beep([[784, .1], [988, .1], [1318, .25]], "triangle", .12),
+  dark: () => beep([[300, .25], [200, .4]], "sawtooth", .07),
+  light: () => beep([[600, .1], [900, .2]], "triangle", .1),
+  hurry: () => beep([[440, .12], [440, .12], [660, .25]], "square", .07),
+};
+document.addEventListener("pointerdown", () => { try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); AC.resume(); } catch (e) {} }, { once: true });
+
+// ---------- 연결 ----------
+try { document.fonts.load('16px "Galmuri14"'); } catch (e) {}
+const socket = io({ transports: ["websocket", "polling"] });
+let S = null, code = null;
+const tv = (a, extra = {}) => socket.emit("tv", Object.assign({ a }, extra));
+socket.on("connect", () => {
+  const c = LS.get("wm_tv_code"), h = LS.get("wm_tv_host");
+  const fresh = () => {
+    let p = LS.get("wm_tv_pass");
+    if (p == null) p = prompt("교사 비밀번호를 입력하세요");
+    if (p == null) return $("app").innerHTML = `<div class="center"><h2 class="jua">교사 비밀번호가 있어야 방을 만들 수 있어요</h2><button class="y bigbtn" onclick="location.reload()">다시 입력하기</button></div>`;
+    socket.emit("tvCreate", { pass: p }, r => {
+      if (r.err) { LS.del("wm_tv_pass"); toast(r.err); return setTimeout(fresh, 400); }
+      LS.set("wm_tv_pass", p);
+      code = r.code; LS.set("wm_tv_code", r.code); LS.set("wm_tv_host", r.host); applySavedSettings();
+    });
+  };
+  if (c && h) socket.emit("tvResume", { code: c, host: h }, r => { if (r.err) fresh(); else code = r.code; });
+  else fresh();
+});
+function applySavedSettings() {
+  try { const s = JSON.parse(LS.get("wm_tv_settings") || "null"); if (s) tv("settings", { s }); } catch (e) {}
+}
+function saveSettings(patch) {
+  const s = Object.assign({}, S ? S.settings : {}, patch);
+  LS.set("wm_tv_settings", JSON.stringify(s)); tv("settings", { s: patch });
+}
+socket.on("tvState", s => { const prev = S; S = s; render(prev); });
+socket.on("reveal", () => SND.reveal());
+socket.on("meeting", () => SND.meeting());
+socket.on("voteResult", () => SND.result());
+socket.on("end", () => SND.win());
+socket.on("clue", c => { SND.clue(); banner(`<div style="font-size:1.6vw;color:var(--red)"><img class="pi" src="assets/ui/icon_clue.png"> 단서 카드 ${c.n}</div><div style="font-size:3vw">${esc(c.en)}</div><div style="font-size:1.9vw;color:var(--ink2)">${esc(c.ko)}</div>`, 9000); });
+socket.on("gevent", ev => {
+  const M = {
+    urgent: () => [`📢 긴급 방송!`, `${ev.area}: ${ev.task}`, `Someone needs help in ${ev.en}!`],
+    urgentDone: () => [`✅ 해결!`, `${ev.by} — ${ev.task}`, "막대 +3%"],
+    urgentFail: () => ["⏰ 긴급 방송 시간이 지났어요", "", ""],
+    lunch: () => ["🍚 급식 시간!", `${ev.sec}초 안에 급식실로 모여요`, "Go to the cafeteria!"],
+    lunchDone: () => [`🍚 ${ev.n}명이 모였어요!`, `막대 +${ev.pct}%`, ""],
+    inspect: () => ["🔍 불시 점검!", `${ev.sec}초 동안 장난 금지`, ""],
+    lostdrop: () => ["👀 복도에 분실물이 떨어졌어요", `주워서 교무실 보관함에 맡기면 열심왕 +5점`, ""],
+  };
+  const m = M[ev.type]; if (!m) return;
+  const [a, b, c] = m();
+  beep([[740, .1], [988, .18]], "triangle", .1);
+  banner(`<div style="font-size:2.6vw">${a}</div>${b ? `<div style="font-size:1.8vw">${b}</div>` : ""}${c ? `<div style="font-size:1.4vw;color:var(--blue)">${c}</div>` : ""}`, 4500);
+});
+socket.on("power", ({ on }) => { if (on) { SND.light(); banner("💡 불이 다시 켜졌어요!", 3000); } else { SND.dark(); banner("⚡ 정전! 복도 차단기를 두 명이 함께 고쳐요", 5000); } });
+let bannerT;
+function banner(html, ms) { const b = $("banner"); b.innerHTML = html; b.classList.add("on"); clearTimeout(bannerT); bannerT = setTimeout(() => b.classList.remove("on"), ms); }
+let hurryDone = false;
+
+let lastView = "";
+function render(prev) {
+  const ph = S.phase;
+  if (ph === "end" && S.stats) saveRecord(S.stats);
+  renderRejoin();
+  if (ph === "lobby") return lobby();
+  if (ph === "roles") return simple(`<div class="center"><h2>역할을 확인하고 있어요</h2><div class="bigtime">${S.roleLeft}</div><p class="jua" style="font-size:2vw">태블릿을 손으로 가리고 카드를 꾹 눌러 보세요</p></div>`, "roles");
+  if (ph === "play") return play();
+  if (ph === "meeting") return meeting();
+  if (ph === "vote") return vote();
+  if (ph === "result") return result();
+  if (ph === "end") return endView();
+}
+function topbar(title, sub, btns) {
+  return `<div class="top"><h1>${title} <small>${sub}</small></h1>${btns}</div>`;
+}
+const ctlBtns = (meet) => `<button onclick="tv('pause')" class="${S.paused ? "y" : ""}">${S.paused ? "▶ 이어서" : "일시정지"}</button>
+  <button onclick="tv('plus30')" ${meet === 1 ? "" : "disabled"}>회의 +30초</button><button onclick="tv('skipMeeting')" ${meet ? "" : "disabled"}>회의 건너뛰기</button>
+  <button class="r" onclick="if(confirm('승패 없이 판을 끝낼까요?')) tv('endGame')">판 끝내기</button>`;
+function simple(html, key) { $("app").innerHTML = html; lastView = key; }
+
+// ---------- 대기실 ----------
+const ENG = [["off", "끔"], ["2", "2단원"], ["3", "3단원"], ["mix", "섞기"], ["custom", "직접"]];  // 과학 문제 판
+function lobby() {
+  const st = S.settings, n = S.players.length;
+  const cap = Math.max(1, Math.min(4, Math.floor((n - 1) / 4)));
+  const B = S.balance || { imps: 1, perHelper: 14, target: 0, cool: 30 }; const auto = B.imps;
+  const url = location.origin + "/?room=" + S.code;
+  const slots = [];
+  for (let i = 0; i < 30; i++) {
+    const p = S.players[i];
+    slots.push(p ? `<div class="slot p ${p.on ? "" : "off"}" onclick="editPlayer('${p.id}')">${avatar(p.look, 2.4)}<span>${esc(p.name)}</span></div>` : `<div class="slot">빈자리</div>`);
+  }
+  $("app").innerHTML = `
+  <div class="row" style="height:27vh">
+    <div class="paper box" style="flex:1"><span class="tape yel">방 번호</span><div class="code">${S.code}</div></div>
+    <div class="paper box promise"><span class="tape">우리 약속</span><div><b>1.</b>장소·시간으로 말해요</div><div><b>2.</b>친구 탓 말고 증거로</div><div><b>3.</b>뽑혀도 함께 청소해요</div></div>
+    <div class="paper box setting"><span class="tape sky">설정</span>
+      <div class="r">장난꾸러기 <span style="display:flex;align-items:center;gap:.4vw"><button onclick="setImps(-1)">−</button><span class="num">${st.imps ? st.imps + "명" : "자동 " + auto}</span><button onclick="setImps(1)">+</button></span></div>
+      <div class="r">놀이 시간 <span>${[5, 8, 10].map(m => `<button class="${st.minutes === m ? "sel" : ""}" onclick="saveSettings({minutes:${m}})">${m}분</button>`).join(" ")}</span></div>
+      <div class="r">판 끝 공개 <span><button class="${st.reveal ? "sel" : ""}" onclick="saveSettings({reveal:true})">켬</button> <button class="${!st.reveal ? "sel" : ""}" onclick="saveSettings({reveal:false})">끔</button></span>
+        <span title="장난이 드러나면 범인이 떠난 방향 발자국이 12초 보여요">발자국</span> <span><button class="${st.footprints ? "sel" : ""}" onclick="saveSettings({footprints:true})">켬</button> <button class="${!st.footprints ? "sel" : ""}" onclick="saveSettings({footprints:false})">끔</button></span></div>
+      <div class="r">단서 카드 <span><button class="${st.clues ? "sel" : ""}" onclick="saveSettings({clues:true})">켬</button> <button class="${!st.clues ? "sel" : ""}" onclick="saveSettings({clues:false})">끔</button></span>
+        특별 규칙 <span title="정전 + 탐정·사진부·반장"><button class="${st.special ? "sel" : ""}" onclick="saveSettings({special:true})">켬</button> <button class="${!st.special ? "sel" : ""}" onclick="saveSettings({special:false})">끔</button></span></div>
+      <div class="r">과학 문제 <span class="engsel" style="white-space:nowrap">${ENG.map(([k, l]) => `<button class="${st.english === k ? "sel" : ""}" onclick="setEng('${k}')">${l}</button>`).join(" ")}</span></div>
+    </div>
+  </div>
+  <div class="grid">${slots.join("")}</div>
+  <div class="paper bottom">
+    <img src="/qr.svg?d=${encodeURIComponent(url)}" alt="QR">
+    <div class="info">들어온 사람 <b>${n}</b> / 30 · 별명 누르면 바꾸기·내보내기 <button style="font-size:.95vw;margin-left:.4vw;padding:.05em .5em" onclick="openBalance()">밸런스 표</button><br><span style="color:#7a4a00">⚖️ 장난꾸러기 ${B.imps}명 · 심부름 1인 ${B.perHelper}개(모두 ${B.target}) · 쉬는 ${B.cool}초</span><br>들어오는 곳 <span class="url">${location.host}</span>${st.english !== "off" ? ` · <span style="color:var(--blue)">과학 문제: ${ENG.find(e => e[0] === st.english)[1]}${st.english === "custom" ? " (" + (st.custom || []).length + "문제)" : ""}</span>` : ""}</div>
+    <div class="klass"><div class="jua" style="font-size:1.2vw">우리 반</div><div>${REC.classes.map((c, i) => `<button class="${REC.cur === i ? "sel" : ""}" onclick="setClass(${i})">${esc(shortC(c))}</button>`).join(" ")}</div></div>
+    <button onclick="openBoard()">🏆 학급 기록</button>
+    <button onclick="if(confirm('방을 닫을까요?')){tv('close');LS.del('wm_tv_code');location.reload()}">방 닫기</button>
+    <button class="y bigbtn" onclick="tv('start')" ${n >= 4 ? "" : "disabled"}>${n >= 4 ? "시작하기" : "4명부터 시작"}</button>
+  </div>`;
+  lastView = "lobby";
+}
+function setImps(d) {
+  const n = S.players.length, cap = Math.max(1, Math.min(4, Math.floor((n - 1) / 4)));
+  let v = (S.settings.imps || 0) + d;
+  if (v < 0) v = 0; if (v > 4) v = 4;
+  if (v > cap && d > 0) { toast(`${n}명이면 장난꾸러기는 ${cap}명까지예요`); v = Math.min(v, Math.max(cap, 0)); }
+  saveSettings({ imps: v });
+}
+function setEng(k) {
+  if (k === "custom") return openCustom();
+  saveSettings({ english: k });
+}
+function openCustom() {
+  const saved = LS.get("wm_tv_custom") || "";
+  const div = document.createElement("div"); div.className = "modal";
+  div.innerHTML = `<div class="paper lined"><span class="tape yel">문제 직접 넣기</span>
+  <p class="jua" style="font-size:1.2rem;margin-top:.6em">한 줄에 한 문제: <b>문제 | 정답 | 오답 | 오답 | 해설</b> (오답은 1~2개, 해설은 없어도 돼요)<br><span style="color:var(--ink2)">예) 소리가 나는 물체의 공통점은? | 떨림이 있어요 | 무거워요 | 뜨거워요 | 소리가 나는 물체는 떨려요.</span></p>
+  <textarea id="cq">${esc(saved)}</textarea>
+  <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:10px"><button onclick="this.closest('.modal').remove()">취소</button><button class="y" id="cqOk">이 문제로 하기</button></div></div>`;
+  document.body.appendChild(div);
+  $("cqOk").onclick = () => {
+    const txt = $("cq").value; LS.set("wm_tv_custom", txt);
+    const qs = txt.split("\n").map(l => l.split("|").map(x => x.trim()).filter(Boolean)).filter(a => a.length >= 3);
+    if (!qs.length) return toast("문제를 한 줄 이상 써 주세요");
+    saveSettings({ english: "custom", custom: qs }); div.remove(); toast(qs.length + "문제를 넣었어요");
+  };
+}
+function editPlayer(id) {
+  const p = S.players.find(q => q.id === id); if (!p) return;
+  const v = prompt(`'${p.name}' 별명을 바꾸려면 새 별명을 쓰세요.\n내보내려면 '내보내기'라고 쓰세요.`, p.name);
+  if (v == null) return;
+  if (v.trim() === "내보내기") tv("kick", { id }); else tv("rename", { id, name: v.trim() });
+}
+function renderRejoin() {
+  $("rejoin").innerHTML = (S.rejoin || []).map(r => `<div class="paper">'${esc(r.name)}'가 다시 들어오려 해요 <button class="y" onclick="tv('admit',{reqId:'${r.reqId}',ok:true})">들여보내기</button><button onclick="tv('admit',{reqId:'${r.reqId}',ok:false})">거절</button></div>`).join("");
+}
+
+// ---------- 놀이 ----------
+function play() {
+  if (lastView !== "play") {
+    $("app").innerHTML = `${topbar("놀이 중", "", "<span id='ctl' style='display:flex;gap:.6vw'></span>")}
+    <div class="row" style="flex:1;min-height:0"><div class="paper mapbox"><canvas id="tvmap"></canvas></div>
+      <div class="paper timebox"><span class="tape yel">남은 시간</span><div class="bigtime" id="tvTime"></div><div class="jua" style="font-size:1.6vw;color:var(--ink2)">회의 때는 시계가 멈춰요</div></div></div>
+    <div class="paper prog"><span class="lbl">모두의 심부름</span><div class="bar"><b id="pb"></b>${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => `<i style="left:${i * 10}%"></i>`).join("")}</div><span class="pct" id="pp"></span></div>
+    <div class="paper evrow" id="evrow"></div>
+    <div id="warn"></div>
+    <div class="clues" id="cl"></div>
+    <div class="messes" id="ms"></div>`;
+    lastView = "play";
+  }
+  document.querySelector(".top h1").innerHTML = `놀이 중 <small>방 ${S.code} · ${S.players.length}명${S.paused ? " · 멈춤" : ""}</small>`;
+  $("ctl").innerHTML = ctlBtns(0);
+  $("tvTime").textContent = fmt(S.limit - S.t);
+  const pct = Math.round(S.progress * 100); $("pb").style.width = pct + "%"; $("pp").textContent = pct + "%";
+  $("ms").innerHTML = [0, 1, 2, 3, 4].map(i => { const m = S.messes[i];
+    return m ? `<div class="paper ms"><span class="tape pink">${i + 1}</span><h3>${esc(m.name)}</h3><p><b>${fmt(m.at)}</b> 에 드러남</p></div>` : `<div class="paper ms empty"><span class="tape">${i + 1}</span>비어 있음</div>`; }).join("");
+  $("warn").innerHTML = (S.blackout ? `<div class="warn" style="background:#3a3a50;color:#ffe066"><img class="pi" src="assets/ui/icon_blackout.png"> 정전 ${S.blackout}초 · 복도 차단기를 두 명이 함께 고쳐요</div>` : "") + (S.messes.length === 4 ? `<div class="warn">한 곳만 더 어질러지면 장난꾸러기 승리!</div>` : "");
+  document.body.classList.toggle("danger", S.messes.length === 4);
+  document.body.classList.toggle("dark", !!S.blackout);
+  const left = S.limit - S.t;
+  document.querySelector(".timebox").classList.toggle("hurry", left <= 60);
+  if (left <= 60 && !hurryDone) { hurryDone = true; SND.hurry(); banner("⏰ 1분 남았어요!", 2500); }
+  if (left <= 10 && left > 0 && !S.paused) SND.tick();
+  const U = S.evUse || { urgent: 0, lunch: 0, inspect: 0 };
+  const busy = !!S.gevent;
+  let evStat = "";
+  if (S.gevent) evStat = S.gevent.type === "urgent" ? `📢 ${S.gevent.area} · ${S.gevent.task} — ${S.gevent.left}초` : `🍚 급식실로! — ${S.gevent.left}초`;
+  else if (S.inspect) evStat = `🔍 불시 점검 ${S.inspect}초`;
+  $("evrow").innerHTML = `<span class="evlbl">선생님 이벤트</span>
+    <button ${busy || !U.urgent ? "disabled" : ""} onclick="tv('event',{kind:'urgent'})">📢 긴급 방송 ${U.urgent}</button>
+    <button ${busy || !U.lunch ? "disabled" : ""} onclick="tv('event',{kind:'lunch'})">🍚 급식 시간 ${U.lunch}</button>
+    <button ${S.inspect || !U.inspect ? "disabled" : ""} onclick="tv('event',{kind:'inspect'})">🔍 불시 점검 ${U.inspect}</button>
+    <span class="evstat">${evStat}</span>`;
+  $("cl").innerHTML = (S.clues || []).map(c => `<div class="c"><img class="pi" src="assets/ui/icon_clue.png"> ${esc(c.ko)}</div>`).join("");
+  drawTvMap();
+}
+function drawTvMap() {
+  const c = $("tvmap"); if (!c || !imgSmall || !MAP) return;
+  const Z = 24; c.width = MAP.W * Z; c.height = MAP.H * Z;
+  const g = c.getContext("2d"); g.drawImage(imgSmall, 0, 0, c.width, c.height);
+  const seen = new Set();
+  for (const m of S.messes) {
+    if (seen.has(m.area)) continue; seen.add(m.area);
+    const A = MAP.areas.find(a => a.id === m.area);
+    let cx, cy, rx, ry;
+    if (A.id === "hw" || A.id === "he") { cx = (A.x0 + A.x1 + 1) / 2 * Z; cy = (A.fy + A.y1 + 1) / 2 * Z; rx = (A.x1 - A.x0 + 1) / 2 * Z; ry = (A.y1 - A.fy + 1) / 2 * Z + 6; }
+    else { cx = (A.x0 + A.x1 + 1) / 2 * Z; cy = (A.fy + A.y1 + 1) / 2 * Z; rx = (A.x1 - A.x0 + 1) / 2 * Z + 6; ry = (A.y1 - A.fy + 1) / 2 * Z + 6; }
+    g.strokeStyle = "#e0302a"; g.lineWidth = 9; g.beginPath(); g.ellipse(cx, cy, rx, ry, 0, 0, 7); g.stroke();
+    g.font = "44px Galmuri14"; const w = g.measureText(A.name).width + 28;
+    g.fillStyle = "#fffaf0"; g.strokeStyle = "#e0302a"; g.lineWidth = 5; g.beginPath(); g.rect(cx - w / 2, cy - 30, w, 60); g.fill(); g.stroke();
+    g.fillStyle = "#e0302a"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(A.name, cx, cy + 2);
+  }
+}
+
+// ---------- 회의 ----------
+function meeting() {
+  const m = S.meeting; if (!m) return;
+  $("app").innerHTML = `${topbar("회의 시간", "놀이 시계 멈춤 " + fmt(S.limit - S.t), `<span style='display:flex;gap:.6vw'>${ctlBtns(1)}</span>`)}
+  <div class="cols">
+    <div class="paper col"><span class="tape pink">부른 사람</span>${avatar(m.caller.look, 9, true)}<h2>${esc(m.caller.name)}</h2><span class="tag">${m.type === "bell" ? "비상벨!" : esc(m.where) + "에서 발견!"}</span></div>
+    <div class="paper col"><span class="tape yel">토론</span><div class="jua" style="font-size:2vw">교실에서 말로 이야기해요</div><div class="bigtime" style="font-size:11vw">${m.left}<span style="font-size:3vw">초</span></div>
+      <div style="color:var(--ink2);font-family:"Galmuri14";font-size:1.6vw">선생님이 늘리거나 건너뛸 수 있어요</div>
+      <div class="frames">나는 <u>&nbsp;장소&nbsp;</u>에서 <u>&nbsp;이름&nbsp;</u>을 봤어요.<br>단서를 보니 <u>&nbsp;이름&nbsp;</u> 같아요.</div></div>
+    <div class="paper col" style="justify-content:flex-start"><span class="tape">어질러진 곳</span><div class="mlist">${[0, 1, 2, 3, 4].map(i => { const x = S.messes[i]; return x ? `<div><span>${esc(x.name)}</span><b>${fmt(x.at)}</b></div>` : `<div class="e"><span>${i + 1}번 칸</span><span>-</span></div>`; }).join("")}</div>
+      ${(S.clues || []).length ? `<div class="mlist" style="margin-top:1vw;font-size:1.5vw">${S.clues.map(c => `<div style="display:block">🔎 ${esc(c.ko)}</div>`).join("")}</div>` : ""}
+      ${(S.photos || []).length ? `<div class="mlist" style="margin-top:1vw;font-size:1.5vw">${S.photos.map(p => `<div style="display:block">📷 <b style="font-family:"Galmuri14">${fmt(p.t)}</b> ${esc(p.area)}: ${p.who.length ? p.who.map(w => esc(w.name)).join(", ") : "아무도 없었어요"}</div>`).join("")}</div>` : ""}</div>
+  </div>
+  <div class="rule">장소와 시간으로 말해요 · 친구 탓 말고 증거로</div>`;
+  lastView = "meeting";
+}
+function vote() {
+  $("app").innerHTML = `${topbar("투표 시간", "누가 누구를 골랐는지는 아무도 몰라요", `<span style='display:flex;gap:.6vw'>${ctlBtns(2)}</span>`)}
+  <div class="center"><h2>태블릿에서 투표해요</h2><div class="bigtime" style="font-size:12vw">${S.meeting ? S.meeting.left : ""}</div><p class="jua" style="font-size:2.2vw">${S.voted} / ${S.voterCount}명 냈어요</p></div>`;
+  lastView = "vote";
+}
+function result() {
+  const r = S.meeting && S.meeting.result; if (!r) return;
+  let h;
+  if (!r.picked) h = `<div class="center"><h2>아무도 뽑히지 않았어요</h2><p class="jua" style="font-size:2.4vw">다시 심부름하러 가요!</p></div>`;
+  else h = `<div class="center">${avatar(r.picked.look, 12)}<h2>${esc(r.picked.name)}${josa(r.picked.name, "은", "는")} 장난꾸러기${r.imp ? "였어요" : "가 아니었어요"}</h2><div class="stamp ${r.imp ? "" : "no"}">${r.imp ? "장난꾸러기!" : "도우미"}</div><p class="jua" style="font-size:2vw;color:var(--ink2)">${esc(r.picked.name)}${josa(r.picked.name, "은", "는")} 이제 청소 당번이에요. 계속 함께해요!</p></div>`;
+  $("app").innerHTML = `${topbar("투표 결과", "표 수는 보이지 않아요", `<span style='display:flex;gap:.6vw'><button onclick="tv('pause')">일시정지</button></span>`)}${h}`;
+  lastView = "result";
+}
+function endView() {
+  document.body.classList.remove("danger", "dark"); hurryDone = false;
+  if (lastView === "end") return;
+  const w = S.winner;
+  const left = !w ? `<span class="tape">판 끝</span><h2>판을 끝냈어요</h2><p class="jua" style="font-size:2vw">승패 없이 끝냈어요</p>`
+    : `<span class="tape">이긴 쪽</span><img src="assets/ui/win_${w === "helper" ? "helper" : "imp"}.png" alt="" style="width:min(44%,28vh);image-rendering:pixelated;border:3px solid var(--ink);border-radius:10px;margin-bottom:.4vw"><h2 style="font-size:2.8vw;margin:.1em 0">${w === "helper" ? "도우미 팀 승리!" : "장난꾸러기 팀 승리!"}</h2><p class="jua" style="font-size:1.7vw;color:var(--ink2);margin:.1em 0">${esc(S.reason)}</p>`;
+  let right = `<span class="tape yel">장난꾸러기 공개</span>`;
+  if (S.impsRevealed) right += `<p class="jua" style="font-size:1.8vw;margin:.2em 0">이번 판 장난꾸러기는</p><div>${S.impsRevealed.map(p => `<span style="display:inline-block;margin:0 1vw;text-align:center">${avatar(p.look, 5)}<br><b class="jua" style="color:var(--red);font-size:2vw">${esc(p.name)}</b></span>`).join("")}</div>`;
+  else right += `<p class="jua" style="font-size:2vw">이번 판은 공개하지 않아요</p>`;
+  if (S.replay) right += `<button class="bigbtn" style="margin-top:.8vw;font-size:1.8vw" onclick="openReplay()">▶ 다시 보기</button>`;
+  right += `<button class="y bigbtn" style="margin-top:.8vw;font-size:1.9vw" onclick="tv('again')">한 판 더</button><p class="jua" style="font-size:1.3vw;color:var(--ink2);margin:.3em 0 0">누르면 태블릿이 모두 대기실로 가요</p>`;
+  $("app").innerHTML = `${topbar("판 끝", "방 " + S.code, `<button onclick="if(confirm('방을 닫을까요?')){tv('close');LS.del('wm_tv_code');location.reload()}">방 닫기</button>`)}
+  <div class="endrow" style="flex:1.2"><div class="paper">${left}</div><div class="paper">${right}</div></div>
+  <div class="row" style="flex:1;min-height:0;margin-top:1vw">${mvpBand()}${classBand()}</div>`;
+  lastView = "end";
+}
+// ---------- 열심왕 · 학급 기록 칸 ----------
+function mvpBand() {
+  const l = S.mvp || [];
+  const hasPrank = l.some(x => "prank" in x);
+  const hasLost = l.some(x => x.lost > 0), hasUrg = l.some(x => x.urgent > 0);
+  const medal = i => ["🥇", "🥈", "🥉"][i] || (i + 1) + "위";
+  const rows = l.slice(0, 5).map((x, i) => `<tr class="${i === 0 ? "hl" : ""}">
+    <td>${medal(i)}</td><td class="nm">${avatar(x.look, 2.2)} ${esc(x.name)}${x.imp ? ' <span class="imptag">장난꾸러기</span>' : ""}</td>
+    <td>${x.task}</td><td>${x.clean}</td><td>${x.meet}</td>${hasLost ? `<td>${x.lost}</td>` : ""}${hasUrg ? `<td>${x.urgent}</td>` : ""}${hasPrank ? `<td>${x.prank || 0}</td>` : ""}<td class="sc">${x.score}점</td></tr>`).join("");
+  return `<div class="paper mvpbox"><span class="tape yel">⭐ 이번 판 열심왕</span>
+    <table class="mvp"><tr><th style="width:4.2vw"></th><th style="text-align:left">친구</th><th style="width:4.6vw">심부름</th><th style="width:4.6vw">치우기</th><th style="width:4vw">회의</th>${hasLost ? '<th style="width:4.2vw">분실물</th>' : ""}${hasUrg ? '<th style="width:4vw">방송</th>' : ""}${hasPrank ? '<th style="width:4vw">장난</th>' : ""}<th style="width:6vw">점수</th></tr>${rows}</table>
+    <div class="mvpnote">심부름 10점 · 치우기 15점 · 회의 10점 · 분실물 5점 · 방송 해결 15점${hasPrank ? " · 장난 20점" : ""}</div></div>`;
+}
+function classBand() {
+  let body;
+  if (REC.cur < 0) body = `<p class="jua" style="font-size:1.5vw;color:var(--ink2);margin-top:2vw">대기실에서 '우리 반'을 고르면<br>판마다 반 기록이 쌓여요</p>`;
+  else {
+    const rows = boardRows(); const me = REC.classes[REC.cur];
+    body = `<table class="mvp"><tr><th style="width:4vw"></th><th style="text-align:left">반</th><th style="width:6vw">점수</th><th style="width:7.5vw">승리</th></tr>${rows.slice(0, 3).map((r, i) => `<tr class="${r.c === me ? "hl" : ""}"><td>${i + 1}위</td><td class="nm">${esc(r.c)}</td><td class="sc">${r.score}점</td><td>${r.wins} / ${r.n}판</td></tr>`).join("")}</table>
+    <div class="mvpnote">${esc(me)} 기록에 더했어요 · 자세한 표는 대기실의 🏆 학급 기록</div>`;
+  }
+  return `<div class="paper mvpbox" style="flex:.8"><span class="tape">🏆 학급 기록</span>${body}</div>`;
+}
+// ---------- 다시 보기 ----------
+const KIND = { shelf: "책장 쓰러뜨리기", books: "책 흩뜨리기", water: "수도꼭지 틀어 놓기", door: "문 잠그기", locker: "사물함 털기", toy: "장난감 상자 털기", plane: "종이비행기 날리기", chalk: "칠판 분필 가루", tissue: "휴지 풀어 놓기", balls: "공 바구니 쏟기" };
+const imgC = new Image(); imgC.src = "assets/chars.png";
+let rpT = 0, rpRun = 0;
+function openReplay() {
+  const R = S.replay; if (!R) return;
+  const d = document.createElement("div"); d.className = "rp"; d.id = "rp";
+  d.innerHTML = `<div class="jua" style="color:#fff;font-size:2.6vw">▶ 다시 보기 — 장난꾸러기는 어디에 있었을까?</div><canvas id="rpc"></canvas>
+    <div class="bar"><span id="rpTime">0:00</span><button onclick="rpT=0">처음부터</button><button onclick="closeReplay()">닫기</button></div>`;
+  document.body.appendChild(d);
+  rpT = 0; const len = Math.max(10, R.len); const speed = len / 30; let last = performance.now();
+  const c = $("rpc"); const Z = 16; c.width = MAP.W * Z; c.height = MAP.H * Z; const g = c.getContext("2d");
+  const step = ts => {
+    if (!$("rp")) return;
+    const dt = (ts - last) / 1000; last = ts; rpT = Math.min(len, rpT + dt * speed);
+    g.imageSmoothingEnabled = true; g.drawImage(imgSmall, 0, 0, c.width, c.height);
+    g.fillStyle = "rgba(20,16,30,.35)"; g.fillRect(0, 0, c.width, c.height);
+    g.textAlign = "center"; g.textBaseline = "middle";
+    for (const e of R.log) {
+      if (e.t > rpT) continue;
+      const age = rpT - e.t;
+      if (e.e === "prank") {
+        const a = Math.max(0.35, 1 - age / 40);
+        g.globalAlpha = a; g.fillStyle = "#e0302a"; g.beginPath(); g.arc(e.x * Z, e.y * Z, 13, 0, 7); g.fill();
+        g.fillStyle = "#fff"; g.font = "bold 16px Galmuri14"; g.fillText("!", e.x * Z, e.y * Z + 1);
+        if (age < 8) { g.globalAlpha = 1; label(g, `${fmt(e.t)} ${e.name} · ${KIND[e.kind]}`, e.x * Z, e.y * Z - 30, "#ffe066"); }
+        g.globalAlpha = 1;
+      }
+      if (e.e === "reveal" && age < 5) { const A = MAP.areas.find(x => x.id === e.area); if (A) { g.strokeStyle = "rgba(255,80,60," + (1 - age / 5) + ")"; g.lineWidth = 8; g.strokeRect(A.x0 * Z, A.fy * Z, (A.x1 - A.x0 + 1) * Z, (A.y1 - A.fy + 1) * Z); } }
+      if (e.e === "meeting" && age < 4) label(g, `📢 ${fmt(e.t)} ${e.type === "bell" ? "비상벨" : "발견!"} — ${e.by}`, c.width / 2, 40, "#fff");
+      if (e.e === "vote" && age < 4) label(g, `🗳 ${e.name} 청소 당번 (${e.imp ? "장난꾸러기!" : "도우미"})`, c.width / 2, 80, e.imp ? "#ffd0c8" : "#cfe6ff");
+      if (e.e === "blackout" && age < 6) { g.fillStyle = "rgba(0,0,0,.45)"; g.fillRect(0, 0, c.width, c.height); label(g, `⚡ ${fmt(e.t)} 정전`, c.width / 2, 120, "#ffe066"); }
+      if (e.e === "clue" && age < 5) label(g, `🔎 ${e.ko || e.en}`, c.width / 2, c.height - 40, "#fff6d6");
+      if (e.e === "urgentDone" && age < 4) label(g, `📢 ${fmt(e.t)} ${e.name} 긴급 방송 해결`, c.width / 2, 120, "#d9f2d9");
+      if (e.e === "lunch" && age < 4) label(g, `🍚 ${fmt(e.t)} 급식 시간 — ${e.n}명 모임`, c.width / 2, 120, "#ffe9c8");
+    }
+    for (const imp of R.imps) {
+      const tr = imp.track; if (!tr.length) continue;
+      let i = tr.findIndex(p => p[0] > rpT); if (i < 0) i = tr.length; const cur = tr[Math.max(0, i - 1)], nxt = tr[Math.min(tr.length - 1, i)];
+      const k = nxt[0] > cur[0] ? (rpT - cur[0]) / (nxt[0] - cur[0]) : 0; const x = cur[1] + (nxt[1] - cur[1]) * Math.min(1, Math.max(0, k)), y = cur[2] + (nxt[2] - cur[2]) * Math.min(1, Math.max(0, k));
+      g.strokeStyle = "rgba(255,120,110,.55)"; g.lineWidth = 4; g.beginPath();
+      for (const p of tr) { if (p[0] > rpT) break; if (p[0] < rpT - 25) continue; g.lineTo(p[1] * Z, p[2] * Z); } g.stroke();
+      g.imageSmoothingEnabled = false; g.drawImage(imgC, 27 * 16, imp.look * 32, 16, 32, x * Z - 16, y * Z - 56, 32, 64);
+      label(g, imp.name, x * Z, y * Z - 62, "#ffc1c1");
+    }
+    $("rpTime").textContent = fmt(rpT) + " / " + fmt(len);
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+function closeReplay() { const d = $("rp"); if (d) d.remove(); }
+function label(g, t, x, y, bg) { g.font = "20px Galmuri14"; const w = g.measureText(t).width + 16; g.fillStyle = bg; g.strokeStyle = "#3a2e28"; g.lineWidth = 2; g.beginPath(); g.rect(x - w / 2, y - 14, w, 28); g.fill(); g.stroke(); g.fillStyle = "#3a2e28"; g.fillText(t, x, y + 1); }
+// ---------- 밸런스 표 (server.js의 IMP_TABLE·PER_HELPER와 같음) ----------
+const IMP_TABLE = { 5: [[4, 1], [15, 2]], 8: [[4, 1], [13, 2], [23, 3]], 10: [[4, 1], [12, 2], [21, 3]] };
+const PER_HELPER = { off: { 5: 8, 8: 12, 10: 15 }, eng: { 5: 6, 8: 9, 10: 11 } };
+const COOL0 = 40;  // server.js R.PRANK_COOL
+const autoK = (n, m) => { let k = 1; for (const [min, v] of IMP_TABLE[m]) if (n >= min) k = v; return k; };
+function openBalance() {
+  const ns = [4, 6, 8, 9, 10, 12, 15, 16, 18, 20, 24, 27, 30];
+  const eng = S.settings.english && S.settings.english !== "off";
+  const cell = (n, m) => { const k = autoK(n, m), per = PER_HELPER[eng ? "eng" : "off"][m]; const cur = S.players.length === n && S.settings.minutes === m;
+    return `<td style="${cur ? "background:#fff3b8;font-weight:bold" : ""}">${k}명<br><small>심부름 ${(n - k) * per}개 · 쉬는 ${COOL0 + 5 * (k - 1)}초</small></td>`; };
+  const d = document.createElement("div"); d.className = "modal";
+  d.innerHTML = `<div class="paper lined" style="padding:2vw 2.4vw;width:min(1100px,94vw);max-height:92vh;overflow:auto"><span class="tape yel">⚖️ 밸런스 표 (자동)</span>
+    <p class="jua" style="font-size:1.15rem;margin:.6em 0">학생 수와 놀이 시간에 따라 장난꾸러기 수, 모두의 심부름 양, 장난 쉬는 시간이 저절로 정해져요. ${eng ? "지금은 과학 문제가 켜져 있어 심부름 양이 조금 적어요." : ""} 3학년에 맞춰 장난꾸러기는 적게, 회의 시간은 넉넉하게 정했어요.</p>
+    <table class="bigboard"><tr><th>학생 수</th><th>5분</th><th>8분</th><th>10분</th></tr>
+    ${ns.map(n => `<tr><td><b>${n}명</b></td>${cell(n, 5)}${cell(n, 8)}${cell(n, 10)}</tr>`).join("")}</table>
+    <p style="font-size:.95rem;color:var(--ink2);line-height:1.6">· 도우미 1명당 심부름: 5분 ${PER_HELPER.off[5]}개 · 8분 ${PER_HELPER.off[8]}개 · 10분 ${PER_HELPER.off[10]}개 (과학 문제 켜면 ${PER_HELPER.eng[5]}·${PER_HELPER.eng[8]}·${PER_HELPER.eng[10]}개)<br>
+    · 장난 쉬는 시간: 장난꾸러기가 많을수록 길어져요 (1명 40초, 한 명 늘 때마다 +5초)<br>· 설정에서 장난꾸러기 수를 직접 정하면 그 수를 써요 (심부름 양과 쉬는 시간은 그 수에 맞춰 다시 계산)</p>
+    <div style="text-align:right"><button class="y" onclick="this.closest('.modal').remove()">닫기</button></div></div>`;
+  document.body.appendChild(d);
+}
+// ---------- 학급 대항 기록 (이 TV 컴퓨터에만 저장, 학생 이름 없음) ----------
+const REC = (() => { let r = null; try { r = JSON.parse(LS.get("wm_tv_records") || "null"); } catch (e) {} r = r || {}; r.classes = r.classes || ["3학년 1반", "3학년 2반", "3학년 3반", "3학년 4반", "3학년 5반", "3학년 6반", "3학년 7반"]; r.games = r.games || []; r.cur = r.cur ?? 0; return r; })();
+function saveRec() { LS.set("wm_tv_records", JSON.stringify(REC)); }
+const shortC = c => c.replace(/^\d학년\s*/, "");
+function setClass(i) { REC.cur = REC.cur === i ? -1 : i; saveRec(); lastView = ""; render(); }
+function saveRecord(st) {
+  if (!st.winner || REC.cur < 0 || REC.cur >= REC.classes.length) return;
+  if (REC.games.some(g => g.id === st.id)) return;
+  REC.games.push({ id: st.id, c: REC.classes[REC.cur], d: new Date().toISOString().slice(0, 10), win: st.winner === "helper", t: st.t, found: st.found, total: st.total, pct: st.pct, n: st.n });
+  if (REC.games.length > 400) REC.games.shift();
+  saveRec();
+}
+function boardRows() {
+  return REC.classes.map(c => {
+    const gs = REC.games.filter(g => g.c === c);
+    const wins = gs.filter(g => g.win);
+    const found = gs.reduce((a, g) => a + g.found, 0), total = gs.reduce((a, g) => a + g.total, 0);
+    const best = wins.length ? Math.min(...wins.map(g => g.t)) : null;
+    const avg = gs.length ? Math.round(gs.reduce((a, g) => a + g.pct, 0) / gs.length) : 0;
+    const score = wins.length * 10 + found * 3 + Math.round(avg / 10);
+    return { c, n: gs.length, wins: wins.length, found, total, best, avg, score };
+  }).sort((a, b) => b.score - a.score || (a.best ?? 1e9) - (b.best ?? 1e9));
+}
+function miniBoard() {
+  if (REC.cur < 0) return "";
+  const rows = boardRows(); const me = REC.classes[REC.cur];
+  return `<div class="board" style="margin-top:1.4vw;width:90%"><div class="jua" style="font-size:1.6vw">🏆 학급 기록 (${esc(me)} 기록에 더했어요)</div>
+    <table>${rows.map((r, i) => `<tr class="${r.c === me ? "me" : ""}"><td>${i + 1}위</td><td>${esc(r.c)}</td><td>${r.score}점</td><td>도우미 승리 ${r.wins}/${r.n}판</td></tr>`).join("")}</table></div>`;
+}
+function openBoard() {
+  const rows = boardRows();
+  const d = document.createElement("div"); d.className = "modal";
+  d.innerHTML = `<div class="paper lined" style="padding:2vw 2.4vw;width:min(1100px,94vw)"><span class="tape yel">🏆 학급 대항 기록</span>
+    <p class="jua" style="font-size:1.2rem;margin:.6em 0">반 친구들이 함께 낸 도우미 팀 성적이에요. 점수 = 도우미 승리 × 10 + 찾은 장난꾸러기 × 3 + 평균 심부름 % ÷ 10</p>
+    <table class="bigboard"><tr><th>순위</th><th>반</th><th>점수</th><th>판 수</th><th>도우미 승리</th><th>찾은 장난꾸러기</th><th>평균 심부름</th><th>가장 빨리 이긴 판</th></tr>
+    ${rows.map((r, i) => `<tr><td>${["🥇", "🥈", "🥉"][i] || i + 1}</td><td>${esc(r.c)}</td><td><b>${r.score}</b></td><td>${r.n}</td><td>${r.wins}</td><td>${r.found} / ${r.total}</td><td>${r.avg}%</td><td>${r.best == null ? "-" : fmt(r.best)}</td></tr>`).join("")}</table>
+    <p style="color:var(--ink2);font-size:.95rem">이 기록은 이 TV 컴퓨터의 브라우저에만 저장돼요. 학생 별명은 저장하지 않아요. '승패 없이 끝내기'로 끝낸 판은 세지 않아요.</p>
+    <div style="display:flex;gap:10px;justify-content:flex-end"><button onclick="editClasses()">반 목록 바꾸기</button><button class="r" onclick="if(confirm('학급 기록을 모두 지울까요?')){REC.games=[];saveRec();this.closest('.modal').remove();openBoard()}">기록 지우기</button><button class="y" onclick="this.closest('.modal').remove()">닫기</button></div></div>`;
+  document.body.appendChild(d);
+}
+function editClasses() {
+  const v = prompt("반 이름을 쉼표로 구분해 써 주세요", REC.classes.join(", "));
+  if (v == null) return;
+  const list = v.split(",").map(x => x.trim()).filter(Boolean).slice(0, 12);
+  if (!list.length) return;
+  REC.classes = list; if (REC.cur >= list.length) REC.cur = 0; saveRec();
+  document.querySelectorAll(".modal").forEach(m => m.remove()); openBoard(); lastView = ""; if (S) render();
+}
+</script>
+</body>
+</html>

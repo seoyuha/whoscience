@@ -1,0 +1,31 @@
+@font-face{font-family:"Galmuri11";src:url(assets/fonts/Galmuri11.woff2) format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Galmuri11";src:url(assets/fonts/Galmuri11-Bold.woff2) format("woff2");font-weight:700;font-display:swap}
+@font-face{font-family:"Galmuri14";src:url(assets/fonts/Galmuri14.woff2) format("woff2");font-weight:400 800;font-display:swap}
+:root{
+  --bg:#ffd45e; --bg2:#ffe28f; --paper:#fffaf0; --ink:#3a2e28; --ink2:#7a6658; --line:#cfdcf0; --margin:#f2a7a7;
+  --blue:#2f6bd8; --red:#e04a3f; --green:#9fe0c4; --pink:#ffc1d6; --sky:#bfe0ff; --tape:#ffe27a;
+  --shadow:0 4px 0 rgba(58,46,40,.25);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:"Galmuri11","Galmuri14",system-ui,sans-serif;overflow:hidden;
+  -webkit-user-select:none;user-select:none;touch-action:manipulation}
+.jua{font-family:"Galmuri14","Galmuri11",sans-serif}
+.pix{font-family:"Galmuri14",monospace;letter-spacing:.02em}
+button{font-family:"Galmuri14",sans-serif;color:var(--ink);cursor:pointer;border:3px solid var(--ink);border-radius:14px;background:var(--paper);
+  box-shadow:var(--shadow);padding:.5em 1em;font-size:1.1rem;transition:transform .06s}
+button:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(58,46,40,.25)}
+button.y{background:#ffe17a}
+button.r{background:#ffd9d4;border-color:#c0392b;color:#b0302a}
+button:disabled{opacity:.45;cursor:default}
+button.sel{outline:4px solid var(--blue);outline-offset:1px;background:#ffe17a}
+.paper{background:var(--paper);border:3px solid var(--ink);border-radius:16px;box-shadow:var(--shadow);position:relative}
+.lined{background-image:repeating-linear-gradient(to bottom,transparent 0 38px,var(--line) 38px 40px);background-color:var(--paper)}
+.lined.margin::before{content:"";position:absolute;left:46px;top:0;bottom:0;width:2px;background:var(--margin)}
+.tape{position:absolute;top:-16px;left:22px;padding:4px 16px;font-family:"Galmuri14";font-size:1.15rem;transform:rotate(-2deg);background:var(--green);box-shadow:0 1px 2px rgba(0,0,0,.15)}
+.tape.pink{background:var(--pink)} .tape.yel{background:var(--tape)} .tape.sky{background:var(--sky)}
+.hide{display:none!important}
+.av{display:inline-block;image-rendering:pixelated;background-repeat:no-repeat;background-image:url(assets/chars.png)}
+.toast{position:fixed;left:50%;top:18%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:.6em 1.2em;border-radius:12px;font-family:Galmuri14;font-size:1.2rem;z-index:99;pointer-events:none;opacity:0;transition:opacity .2s}
+.toast.on{opacity:1}
+input{font-family:"Galmuri14";color:var(--ink)}
+.pi{width:1.35em;height:1.35em;image-rendering:pixelated;vertical-align:-.3em;display:inline-block}
