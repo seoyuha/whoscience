@@ -1,7 +1,7 @@
 {
-  "name": "whomess",
+  "name": "whoscience",
   "version": "1.0.0",
-  "description": "Who did it? — 교실 추리 영어 게임",
+  "description": "누가 그런 거지? 과학 탐정단 — 3학년 과학 복습 추리 게임",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
