@@ -58,8 +58,9 @@ const DOOR = Object.fromEntries(MAP.doors.map(d => [d.id, d]));
 const TASK = Object.fromEntries(MAP.tasks.map(t => [t.id, t]));
 const SPOT = Object.fromEntries(MAP.pranks.map(p => [p.id, p]));
 
-// 교사 비밀번호: Render의 Environment에서 TEACHER_PASS로 설정해요 (아래 1234는 내 컴퓨터 시험용)
-const TEACHER_PASS = process.env.TEACHER_PASS || "1234";
+// 교사 비밀번호 (코드에는 알아볼 수 없는 해시값만 들어 있어요)
+const TEACHER_PASS_HASH = "a83d11f43fd751f909fa3b6c4f8db461439d58e7527cbf536af0707aa4e629e0";
+function teacherPassOk(p) { return require("crypto").createHash("sha256").update("whoscience:" + String(p || "")).digest("hex") === TEACHER_PASS_HASH; }
 const rooms = new Map();
 const now = () => Date.now();
 const rid = () => crypto.randomBytes(9).toString("base64url");
@@ -462,7 +463,7 @@ io.on("connection", socket => {
 
   socket.on("tvCreate", (data, ack) => {
     if (typeof data === "function") { ack = data; data = {}; }
-    if (String((data || {}).pass || "") !== TEACHER_PASS) return ack && ack({ err: "교사 비밀번호가 달라요" });
+    if (!teacherPassOk((data || {}).pass)) return ack && ack({ err: "교사 비밀번호가 달라요" });
     const r = makeRoom();
     if (!r.code) return ack && ack({ err: "방을 만들 수 없어요" });
     room = r; isTV = true; r.tv = socket.id; socket.join(r.code);
